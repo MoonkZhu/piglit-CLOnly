@@ -9,4 +9,4 @@ from tests.opencl_foreign import profile as _opencl_foreign
 __all__ = ['profile']
 
 profile = _cl.copy()
-profile.update(_opencl_foreign)
+profile.test_list.update(_opencl_foreign.test_list)
