@@ -278,12 +278,20 @@ behaves.
     When this variable is true in python then any timeouts given by tests
     will be ignored, and they will run until completion or they are killed.
 
-  - `PIGLIT_VKRUNNER_BINARY`
+  - `PIGLIT_CL_VERSION`
 
-    Can be used to override the path to the vkrunner executable for
-    running Vulkan shader tests. Alternatively the config option
-    vkrunner:bin can be used instead. If neither are set then vkrunner
-    will be searched for in the search path.
+    Overrides the default OpenCL version used by the framework during test
+    execution. E.g., `PIGLIT_CL_VERSION=1.2`
+
+  - `PIGLIT_CL_PLATFORM`
+
+    Specifies the OpenCL platform (by string prefix/name) to target when running
+    tests. Useful when multiple OpenCL SDKs or drivers are installed.
+
+  - `PIGLIT_CL_DEVICE`
+
+    Specifies the OpenCL device (by string prefix/name) to target. Helpful when
+    a platform has multiple devices (e.g., integrated GPU vs discrete GPU vs CPU).
 
 
 ### 3.2 Note
