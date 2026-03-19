@@ -212,7 +212,15 @@ Have a look into the tests/ directory to see what test profiles are available:
 
 See also section 4.
 
-To create some nice formatted test summaries, run
+**Viewing Results:**
+
+After a run, Piglit outputs the test results into a `results.json.bz2` (or similar format depending on `PIGLIT_COMPRESSION`) file inside the specified results directory. You can decompress and read this JSON log for detailed trace information and error outputs.
+
+To display the results as a formatted table directly in your console, run:
+
+    $ ./piglit summary console results/cl
+
+To create a nice interactive HTML report with test summaries and detailed logs, run:
 
     $ ./piglit summary html summary/cl results/cl
 
@@ -224,7 +232,7 @@ During development, you can use this to watch for regressions:
 You can combine as many testruns as you want this way (in theory;
 the HTML layout becomes awkward when the number of testruns increases)
 
-Have a look at the results with a browser:
+Have a look at the HTML results with a browser:
 
     $ xdg-open summary/cl/index.html
 
