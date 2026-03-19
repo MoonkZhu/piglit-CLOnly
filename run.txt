@@ -1,0 +1,2 @@
+export PIGLIT_BUILD_DIR=/path/to/build  # e.g., export PIGLIT_BUILD_DIR=build
+./piglit run cl -t "double" -t "ulong|long" results_cl
