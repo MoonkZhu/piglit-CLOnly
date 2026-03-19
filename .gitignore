@@ -34,3 +34,6 @@ __pycache__/
 tests/*.xml
 tests/*.xml.gz
 !tests/*.meta.xml
+build/
+results_cl/
+results_cl_2/
