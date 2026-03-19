@@ -176,6 +176,42 @@ CD to piglit directory.
     cmake -H. -Bbuild -G "Ninja" -DGLEXT_INCLUDE_DIR=\path\to\glext -DPIGLIT_USE_WAFFLE=TRUE -DWAFFLE_INCLUDE_DIRS=\path\to\waffle\include\waffle WAFFLE_LDFLAGS=\path\to\waffle\lib\libwaffle-1.a
 
 
+
+### 2.6 Building OpenCL tests only
+
+If you are only interested in testing OpenCL, you can skip building OpenGL/Vulkan tests to significantly reduce compilation time and dependencies.
+
+We provide a convenience script `build_cl_only.sh` for this purpose:
+
+    $ ./build_cl_only.sh
+
+This script creates a `build/` directory and configures CMake to disable all graphics-related tests (GL, GLES, Vulkan, Waffle, etc.) and enables only `PIGLIT_BUILD_CL_TESTS`.
+
+#### 2.6.1 Build Artifacts
+
+Running `build_cl_only.sh` does not produce a compiled `piglit` executable because the main test runner is actually the `piglit` Python script located in the repository root. Instead, this build process generates the underlying C/C++ OpenCL test executables.
+
+You will find the generated binaries in the `build/bin/` directory. Some examples include:
+- `build/bin/cl-api-create-buffer`
+- `build/bin/cl-api-get-device-ids`
+- `build/bin/cl-program-tester`
+
+#### 2.6.2 Running OpenCL Tests
+
+Since you built the tests in a custom `build/` directory, you need to tell the `piglit` Python runner where to find them. You can do this by setting the `PIGLIT_BUILD_DIR` environment variable.
+
+To run all OpenCL tests and write the results to `results/cl`:
+
+    $ PIGLIT_BUILD_DIR=build ./piglit run cl results/cl
+
+If you want to run the new `quick_cl.py` profile to run all OpenCL test cases quickly:
+
+    $ PIGLIT_BUILD_DIR=build ./piglit run tests/quick_cl.py results/quick_cl
+
+You can also run individual test executables directly from the command line for debugging purposes:
+
+    $ ./build/bin/cl-api-get-device-ids
+
 ## 3. How to run tests
 
 Make sure that everything is set up correctly:
