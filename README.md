@@ -178,19 +178,23 @@ CD to piglit directory.
 
 ## 3. How to run tests
 
-Make sure that everything is set up correctly:
+The `piglit` executable is a Python script located at the root of the repository. It is a wrapper that invokes the compiled test binaries and framework logic.
 
-    $ ./piglit run sanity results/sanity
+To run tests, you must specify the build directory using the `PIGLIT_BUILD_DIR` environment variable, or simply run tests from within the build directory if it is structured accordingly.
 
-You may include '.py' on the profile, or you may exclude it (sanity vs sanity.py),
+Make sure that everything is set up correctly. To run the OpenCL tests, use the `cl` profile:
+
+    $ PIGLIT_BUILD_DIR=build/ ./piglit run cl results/cl
+
+You may include '.py' on the profile, or you may exclude it (cl vs cl.py),
 both are equally valid.
 
 You may also preface test profiles with tests/ (or any other path you like),
 which may be useful for shell tab completion.
 
-You may provide multiple profiles to be run at the same time:
+You can filter specific OpenCL test types. For example, to run only double and ulong/long tests:
 
-    $ ./piglit run quick_cl gpu deqp_gles3 results/gl-cl-combined
+    $ PIGLIT_BUILD_DIR=build/ ./piglit run cl results/cl -t 'double' -t 'ulong|long'
 
 Use
 
@@ -208,9 +212,17 @@ Have a look into the tests/ directory to see what test profiles are available:
 
 See also section 4.
 
-To create some nice formatted test summaries, run
+**Viewing Results:**
 
-    $ ./piglit summary html summary/sanity results/sanity
+After a run, Piglit outputs the test results into a `results.json.bz2` (or similar format depending on `PIGLIT_COMPRESSION`) file inside the specified results directory. You can decompress and read this JSON log for detailed trace information and error outputs.
+
+To display the results as a formatted table directly in your console, run:
+
+    $ ./piglit summary console results/cl
+
+To create a nice interactive HTML report with test summaries and detailed logs, run:
+
+    $ ./piglit summary html summary/cl results/cl
 
 Hint: You can combine multiple test results into a single summary.
 During development, you can use this to watch for regressions:
@@ -220,9 +232,9 @@ During development, you can use this to watch for regressions:
 You can combine as many testruns as you want this way (in theory;
 the HTML layout becomes awkward when the number of testruns increases)
 
-Have a look at the results with a browser:
+Have a look at the HTML results with a browser:
 
-    $ xdg-open summary/sanity/index.html
+    $ xdg-open summary/cl/index.html
 
 The summary shows the 'status' of a test:
 
@@ -274,12 +286,20 @@ behaves.
     When this variable is true in python then any timeouts given by tests
     will be ignored, and they will run until completion or they are killed.
 
-  - `PIGLIT_VKRUNNER_BINARY`
+  - `PIGLIT_CL_VERSION`
 
-    Can be used to override the path to the vkrunner executable for
-    running Vulkan shader tests. Alternatively the config option
-    vkrunner:bin can be used instead. If neither are set then vkrunner
-    will be searched for in the search path.
+    Overrides the default OpenCL version used by the framework during test
+    execution. E.g., `PIGLIT_CL_VERSION=1.2`
+
+  - `PIGLIT_CL_PLATFORM`
+
+    Specifies the OpenCL platform (by string prefix/name) to target when running
+    tests. Useful when multiple OpenCL SDKs or drivers are installed.
+
+  - `PIGLIT_CL_DEVICE`
+
+    Specifies the OpenCL device (by string prefix/name) to target. Helpful when
+    a platform has multiple devices (e.g., integrated GPU vs discrete GPU vs CPU).
 
 
 ### 3.2 Note
@@ -307,69 +327,11 @@ Test sets are specified as Python scripts in the tests directory.
 The following test sets are currently available:
 
 
-### 4.1 OpenGL Tests
-
-  - **sanity.py** This suite contains minimal OpenGL sanity tests. These tests
-    must pass, otherwise the other tests will not generate reliable results.
-  - **all.py** This suite contains all OpenGL tests.
-  - **quick.py** Run all tests, but cut down significantly on their runtime
-    (and thus on the number of problems they can find).
-  - **gpu.py** A further reduced set of tests from quick.py, this runs tests
-    only for hardware functionality and not tests for the software stack.
-  - **llvmpipe.py** A reduced set of tests from gpu.py removing tests that are
-    problematic using llvmpipe
-  - **cpu.py** This profile runs tests that don't touch the gpu, in other words
-    all of the tests in quick.py that are not run by gpu.py
-  - **glslparser.py** A subset of all.py which runs only glslparser tests
-  - **shader.py** A subset of all.py which runs only shader tests
-  - **no_error.py** A modified version of the test list run as khr_no_error
-    variants
-
-
-### 4.2 OpenCL Tests
+### 4.1 OpenCL Tests
 
   - **cl.py** This suite contains all OpenCL tests.
   - **quick_cl.py** This runs all of the tests from cl.py as well as tests from
     opencv and oclconform.
-
-
-### 4.3 Vulkan tests
-
-  - **vulkan.py** This suite contains all Vulkan tests. Note that
-    currently all of the Vulkan tests require VkRunner. If it is not
-    installed then all of the tests will be skipped.
-
-
-### 4.4 Replay tests
-
-  - **replay.py** This profile allows running
-    [replayer.py](replayer/replayer.py) tests from a traces
-    description file. Check its [README](replayer/README.md) for
-    further information about the format of the description files and
-    running dependencies.
-
-### 4.5 External Integration
-
-  - **xts.py** Support for running the X Test Suite using piglit.
-  - **igt.py** Support for running Intel-gpu-tools test suite using piglit.
-  - **deqp_egl.py** Support for running dEQP's EGL profile with piglit.
-  - **deqp_gles2.py** Support for running dEQP's gles2 profile with piglit.
-  - **deqp_gles3.py** Support for running dEQP's gles3 profile with piglit.
-  - **deqp_gles31.py** Support for running dEQP's gles3.1 profile with piglit.
-  - **deqp_vk.py** Support for running the official Khronos Vulkan CTS profile
-    with piglit.
-  - **khr_gl.py** Support for running the open source Khronos OpenGL CTS tests
-    with piglit.
-  - **khr_gl45.py** Support for running the open source Khronos OpenGL 4.5 CTS
-    tests with piglit.
-  - **cts_gl.py** Support for running the closed source Khronos OpenGL CTS
-    tests with piglit.
-  - **cts_gl45.py** Support for running the closed source Khronos OpenGL 4.5
-    CTS tests with piglit.
-  - **cts_gles.py** Support for running the closed source Khronos GLES CTS
-    tests with piglit.
-  - **oglconform.py** Support for running sub-test of the Intel oglconform test
-    suite with piglit.
 
 
 ## 5. How to write tests
@@ -381,9 +343,8 @@ Therefore, tests can be implemented in an arbitrary standalone language.
 C is the preferred language for compiled tests, piglit also supports its own
 simple formats for test shaders and glsl parser input.
 
-All new tests must be added to the appropriate profile, all.py profile for
-OpenGL and cl.py for OpenCL. There are a few basic test classes supported by the
-python framework:
+All new tests must be added to the appropriate profile, cl.py for OpenCL.
+There are a few basic test classes supported by the python framework:
 
   - `PiglitBaseTest`
     A shared base class for all native piglit tests.
